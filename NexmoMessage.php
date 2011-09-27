@@ -177,7 +177,7 @@ class NexmoMessage {
 		//How many messages were sent?
 		if ( $info->messagecount > 1 ) {
 		
-			$start = '<p>Your message was sent in ' . $response_obj->messagecount . ' parts ';
+			$start = '<p>Your message was sent in ' . $info->messagecount . ' parts ';
 		
 		} else {
 		
@@ -187,13 +187,14 @@ class NexmoMessage {
 		
 		//Check each message for errors
 		$error = '';
-		$messages_array = $response_obj->messages;
-		
-		foreach ( $messages_array as $message ) {
+		if (!is_array($info->messages)) $info->messages = array();
+
+		foreach ( $info->messages as $message ) {
 			if ( $message->status != 0) {
 				$error .= $message->errortext . ' ';
 			}
 		}
+		
 		
 		//Complete parsed response
 		if ( $error == '' ) {
