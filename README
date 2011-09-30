@@ -1,0 +1,19 @@
+Sending SMS via the Nexmo SMS gateway.
+
+
+Quick Examples
+--------------
+
+1) Sending an SMS
+
+    $sms = new NexmoMessage('account_key', 'account_secret');
+    $sms->sendText( '+447234567890', 'MyApp', 'Hello world!' );
+
+
+
+2) Recieving SMS
+
+     $sms = new NexmoMessage('account_key', 'account_secret');
+     if (!$sms->inboundText()) {
+         $sms->reply('You said: ' . $sms->text);
+     }

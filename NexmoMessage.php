@@ -10,6 +10,9 @@
  *     pushWap ( $to, $from, $title, $url, $validity = 172800000 )
  *     displayOverview( $nexmo_response=null )
  *     
+ *     inboundText ( $data=null )
+ *     reply ( $text )
+ *     
  *
  */
 
@@ -219,6 +222,14 @@ class NexmoMessage {
 	/**
 	 * Inbound text methods
 	 */
+	
+
+	/**
+	 * Check for any inbound messages, using $_GET by default.
+	 *
+	 * This will set the current message to the inbound
+	 * message allowing for a future reply() call.
+	 */
 	public function inboundText( $data=null ){
 		if(!$data) $data = $_GET;
 
@@ -236,6 +247,9 @@ class NexmoMessage {
 	}
 
 
+	/**
+	 * Reply the current message if one is set.
+	 */
 	public function reply ($message) {
 		// Make sure we actually have a text to reply to
 		if (!$this->inbound_message) {
