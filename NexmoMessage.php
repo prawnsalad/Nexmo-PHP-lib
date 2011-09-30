@@ -20,7 +20,7 @@ class NexmoMessage {
 	private $nx_password = '';
 
 	/**
-	 * Nexmo server URI
+	 * @var string Nexmo server URI
 	 *
 	 * We're sticking with the JSON interface here since json
 	 * parsing is built into PHP and requires no extensions.
@@ -29,31 +29,28 @@ class NexmoMessage {
 	 */
 	var $nx_uri = 'https://rest.nexmo.com/sms/json';
 
-
-	/**
-	 * @var string The most recent unparsed Nexmo response.
-	 */
-	var $unparsed_response = '';
-	
 	
 	/**
 	 * @var array The most recent parsed Nexmo response.
 	 */
-	var $nexmo_response = '';
+	private $nexmo_response = '';
 	
 
 	/**
-	 * @var array If one exists, any inbound message
+	 * @var bool If recieved an inbound message
 	 */
-	var $inbound_text = array();
+	var $inbound_message = false;
+
+
+	// Current message
+	public $to = '';
+	public $from = '';
+	public $text = '';
 
 	
 	function NexmoMessage ($nx_key, $nx_password) {
 		$this->nx_key = $nx_key;
 		$this->nx_password = $nx_password;
-
-		// Get any inbound text if they exist
-		$this->inbound_text = $this->inboundText();
 	}
 
 
@@ -132,7 +129,7 @@ class NexmoMessage {
 	
 	
 	/**
-	 * Prepare and send new text message.
+	 * Prepare and send a new message.
 	 */
 	private function sendRequest ( $data ) {
 	 	// Build the post data
@@ -150,7 +147,6 @@ class NexmoMessage {
 		curl_close ( $to_nexmo );
 		
 		$from_nexmo = str_replace('-', '', $from_nexmo);
-		$this->unparsed_response = $from_nexmo;
 		
 		return $this->nexmoParse( $from_nexmo );
 	 
@@ -226,27 +222,27 @@ class NexmoMessage {
 	public function inboundText( $data=null ){
 		if(!$data) $data = $_GET;
 
-		if(!isset($data['text'], $data['msisdn'], $data['to']) return array();
+		if(!isset($data['text'], $data['msisdn'], $data['to'])) return false;
 
-		$ret = array(
-			'to' => $data['to'],
-			'from' => $data['msisdn'],
-			'text' => $data['text']
-		);
+		// Get the relevant data
+		$this->to = $data['to'];
+		$this->from = $data['msisdn'];
+		$this->text = $data['text'];
 
-		return $ret;
+		// Flag that we have an inbound message
+		$this->inbound_message = true;
+
+		return true;
 	}
 
 
 	public function reply ($message) {
 		// Make sure we actually have a text to reply to
-		if (empty($this->inbound_text)) {
+		if (!$this->inbound_message) {
 			return false;
 		}
 
-		$msg = $this->inbound_text;
-
-		return $this->sendText($msg['from'], $msg['to'], $message);
+		return $this->sendText($this->from, $this->to, $message);
 	}
 
 }
