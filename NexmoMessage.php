@@ -42,10 +42,18 @@ class NexmoMessage {
 	var $nexmo_response = '';
 	
 
+	/**
+	 * @var array If one exists, any inbound message
+	 */
+	var $inbound_text = array();
+
 	
 	function NexmoMessage ($nx_key, $nx_password) {
 		$this->nx_key = $nx_key;
 		$this->nx_password = $nx_password;
+
+		// Get any inbound text if they exist
+		$this->inbound_text = $this->inboundText();
 	}
 
 
@@ -204,6 +212,41 @@ class NexmoMessage {
 		}
 
 		return $start . $complete;
+	}
+
+
+
+
+
+
+
+	/**
+	 * Inbound text methods
+	 */
+	public function inboundText( $data=null ){
+		if(!$data) $data = $_GET;
+
+		if(!isset($data['text'], $data['msisdn'], $data['to']) return array();
+
+		$ret = array(
+			'to' => $data['to'],
+			'from' => $data['msisdn'],
+			'text' => $data['text']
+		);
+
+		return $ret;
+	}
+
+
+	public function reply ($message) {
+		// Make sure we actually have a text to reply to
+		if (empty($this->inbound_text)) {
+			return false;
+		}
+
+		$msg = $this->inbound_text;
+
+		return $this->sendText($msg['from'], $msg['to'], $message);
 	}
 
 }
