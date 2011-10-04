@@ -71,6 +71,9 @@ class NexmoMessage {
 		//Must be UTF-8 Encoded
 		$message = utf8_encode( $message );
 		
+		// Make sure $from is valid
+		$from = $this->validateOriginator($from);
+
 		// URL Encode
 		$from = urlencode( $from );
 		$message = urlencode( $message );
@@ -95,6 +98,9 @@ class NexmoMessage {
 		$body = bin2hex ( $body );
 		$udh = bin2hex ( $udh );
 
+		// Make sure $from is valid
+		$from = $this->validateOriginator($from);
+
 		// Send away!
 		$post = array(
 			'from' => $from,
@@ -116,6 +122,9 @@ class NexmoMessage {
 		//WAP Push title and URL must be UTF-8 Encoded
 		$title = utf8_encode ( $body );
 		$url = utf8_encode ( $udh );
+
+		// Make sure $from is valid
+		$from = $this->validateOriginator($from);
 
 		// Send away!
 		$post = array(
@@ -173,6 +182,35 @@ class NexmoMessage {
 			return false;
 		}
 		
+	}
+
+
+	/**
+	 * Validate an originator string
+	 *
+	 * If the originator ('from' field) is invalid, some networks may reject the network
+	 * whilst stinging you with the financial cost! While this cannot correct them, it
+	 * will try its best to correctly format them.
+	 */
+	private function validateOriginator($inp){
+		// Remove any invalid characters
+		$ret = preg_replace('/[^a-zA-Z0-9]/', '', (string)$inp);
+
+		if(preg_match('/[a-zA-Z]/', $inp)){
+			
+			// Alphanumeric format so make sure it's < 11 chars
+			$ret = substr($ret, 0, 11);
+
+		} else {
+
+			// Numerical, remove any prepending '00'
+			if(substr($ret, 0, 2) == '00'){
+				$ret = substr($ret, 2);
+				$ret = substr($ret, 0, 15);
+			}
+		}
+		
+		return (string)$ret;
 	}
 
 
