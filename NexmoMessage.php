@@ -74,6 +74,8 @@ class NexmoMessage {
 			return false;
 		}
 		
+		$containsUnicode = max(array_map('ord', str_split($message))) > 127;
+		
 		// Make sure $from is valid
 		$from = $this->validateOriginator($from);
 
@@ -85,7 +87,8 @@ class NexmoMessage {
 		$post = array(
 			'from' => $from,
 			'to' => $to,
-			'text' => $message
+			'text' => $message,
+			'type' => $containsUnicode ? 'unicode' : 'text'
 		);
 		return $this->sendRequest ( $post );
 		
