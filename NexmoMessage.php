@@ -49,6 +49,7 @@ class NexmoMessage {
 	public $to = '';
 	public $from = '';
 	public $text = '';
+	public $network = '';
 
 	
 	function NexmoMessage ($nx_key, $nx_password) {
@@ -197,7 +198,7 @@ class NexmoMessage {
 		$ret = preg_replace('/[^a-zA-Z0-9]/', '', (string)$inp);
 
 		if(preg_match('/[a-zA-Z]/', $inp)){
-			
+
 			// Alphanumeric format so make sure it's < 11 chars
 			$ret = substr($ret, 0, 11);
 
@@ -277,6 +278,7 @@ class NexmoMessage {
 		$this->to = $data['to'];
 		$this->from = $data['msisdn'];
 		$this->text = $data['text'];
+		$this->network = $data['network-code'];
 
 		// Flag that we have an inbound message
 		$this->inbound_message = true;
