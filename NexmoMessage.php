@@ -64,13 +64,18 @@ class NexmoMessage {
 	 */
 	function sendText ( $to, $from, $message ) {
 	
-		if ( !is_numeric($from) ) {
-			//Must be UTF-8 Encoded if not a continuous number
-			$from = utf8_encode( $from );
+		// Making sure strings are UTF-8 encoded
+		if ( !is_numeric($from) && !mb_check_encoding($from, 'UTF-8') ) {
+			trigger_error('$from needs to be a valid UTF-8 encoded string');
+			return false;
+		}
+
+		if ( !mb_check_encoding($message, 'UTF-8') ) {
+			trigger_error('$message needs to be a valid UTF-8 encoded string');
+			return false;
 		}
 		
-		//Must be UTF-8 Encoded
-		$message = utf8_encode( $message );
+		$containsUnicode = max(array_map('ord', str_split($message))) > 127;
 		
 		// Make sure $from is valid
 		$from = $this->validateOriginator($from);
@@ -83,7 +88,8 @@ class NexmoMessage {
 		$post = array(
 			'from' => $from,
 			'to' => $to,
-			'text' => $message
+			'text' => $message,
+			'type' => $containsUnicode ? 'unicode' : 'text'
 		);
 		return $this->sendRequest ( $post );
 		
@@ -119,11 +125,13 @@ class NexmoMessage {
 	 * Prepare new binary message.
 	 */
 	function pushWap ( $to, $from, $title, $url, $validity = 172800000 ) {
-		
-		//WAP Push title and URL must be UTF-8 Encoded
-		$title = utf8_encode ( $body );
-		$url = utf8_encode ( $udh );
 
+		// Making sure $title and $url are UTF-8 encoded
+		if ( !mb_check_encoding($title, 'UTF-8') || !mb_check_encoding($url, 'UTF-8') ) {
+			trigger_error('$title and $udh need to be valid UTF-8 encoded strings');
+			return false;
+		}
+		
 		// Make sure $from is valid
 		$from = $this->validateOriginator($from);
 
