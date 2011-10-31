@@ -153,19 +153,40 @@ class NexmoMessage {
 	 * Prepare and send a new message.
 	 */
 	private function sendRequest ( $data ) {
-	 	// Build the post data
-	 	$data = array_merge($data, array('username' => $this->nx_key, 'password' => $this->nx_password));
-	 	$post = '';
-	 	foreach($data as $k => $v){
-	 		$post .= "&$k=$v";
-	 	}
+		// Build the post data
+		$data = array_merge($data, array('username' => $this->nx_key, 'password' => $this->nx_password));
+		$post = '';
+		foreach($data as $k => $v){
+			$post .= "&$k=$v";
+		}
 
-		$to_nexmo = curl_init( $this->nx_uri );
-		curl_setopt( $to_nexmo, CURLOPT_POST, true );
-		curl_setopt( $to_nexmo, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $to_nexmo, CURLOPT_POSTFIELDS, $post );
-		$from_nexmo = curl_exec( $to_nexmo );
-		curl_close ( $to_nexmo );
+		// If available, use CURL
+		if (function_exists('curl_version')) {
+
+			$to_nexmo = curl_init( $this->nx_uri );
+			curl_setopt( $to_nexmo, CURLOPT_POST, true );
+			curl_setopt( $to_nexmo, CURLOPT_RETURNTRANSFER, true );
+			curl_setopt( $to_nexmo, CURLOPT_POSTFIELDS, $post );
+			$from_nexmo = curl_exec( $to_nexmo );
+			curl_close ( $to_nexmo );
+
+		} elseif (ini_get('allow_url_fopen')) {
+			// No CURL available so try the awesome file_get_contents
+
+			$opts = array('http' =>
+				array(
+					'method'  => 'POST',
+					'header'  => 'Content-type: application/x-www-form-urlencoded',
+					'content' => $post
+				)
+			);
+			$context = stream_context_create($opts);
+			$from_nexmo = file_get_contents($this->nx_uri, false, $context);
+
+		} else {
+			// No way of sending a HTTP post :(
+			return false;
+		}
 		
 		$from_nexmo = str_replace('-', '', $from_nexmo);
 		
@@ -228,15 +249,20 @@ class NexmoMessage {
 	public function displayOverview( $nexmo_response=null ){
 		$info = (!$nexmo_response) ? $this->nexmo_response : $nexmo_response;
 
+		if (!$nexmo_response ) return '<p>Cannot display an overview of this response</p>';
+
 		//How many messages were sent?
 		if ( $info->messagecount > 1 ) {
 		
 			$start = '<p>Your message was sent in ' . $info->messagecount . ' parts ';
 		
-		} else {
+		} elseif ( $info->messagecount == 1) {
 		
 			$start = '<p>Your message was sent ';
 		
+		} else {
+
+			return '<p>There was an error sending your message</p>';
 		}
 		
 		//Check each message for errors
