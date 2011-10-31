@@ -41,5 +41,5 @@ Most Frequent Issues
 
  Your message appears to have been sent but you do not recieve it.
 
- 	Run the example.php file included. This will show any errors that
- 	are returned from Nexmo.
+    Run the example.php file included. This will show any errors that
+    are returned from Nexmo.
