@@ -89,7 +89,7 @@ class NexmoMessage {
 			'from' => $from,
 			'to' => $to,
 			'text' => $message,
-			'type' => $containsUnicode ? 'unicode' : 'text'
+			'type' => 'text'
 		);
 		return $this->sendRequest ( $post );
 		
