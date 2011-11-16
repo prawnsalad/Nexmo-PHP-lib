@@ -5,7 +5,7 @@
  * 
  * Usage: $var = new NexoMessage ( $account_key, $account_password );
  * Methods:
- *     sendText ( $to, $from, $message )
+ *     sendText ( $to, $from, $message, $unicode = null )
  *     sendBinary ( $to, $from, $body, $udh )
  *     pushWap ( $to, $from, $title, $url, $validity = 172800000 )
  *     displayOverview( $nexmo_response=null )
@@ -61,8 +61,12 @@ class NexmoMessage {
 
 	/**
 	 * Prepare new text message.
+	 *
+	 * If $unicode is not provided we will try to detect the
+	 * message type. Otherwise set to TRUE if you require
+	 * unicode characters.
 	 */
-	function sendText ( $to, $from, $message ) {
+	function sendText ( $to, $from, $message, $unicode=null ) {
 	
 		// Making sure strings are UTF-8 encoded
 		if ( !is_numeric($from) && !mb_check_encoding($from, 'UTF-8') ) {
@@ -75,7 +79,11 @@ class NexmoMessage {
 			return false;
 		}
 		
-		$containsUnicode = max(array_map('ord', str_split($message))) > 127;
+		if ($unicode === null) {
+			$containsUnicode = max(array_map('ord', str_split($message))) > 127;
+		} else {
+			$containsUnicode = (bool)$unicode;
+		}
 		
 		// Make sure $from is valid
 		$from = $this->validateOriginator($from);
@@ -89,7 +97,7 @@ class NexmoMessage {
 			'from' => $from,
 			'to' => $to,
 			'text' => $message,
-			'type' => 'text'
+			'type' => $containsUnicode ? 'unicode' : 'text'
 		);
 		return $this->sendRequest ( $post );
 		
