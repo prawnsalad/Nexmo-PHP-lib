@@ -1,6 +1,14 @@
 <?php
 
-
+/**
+ * Class NexmoReceipt handles and incoming message receipts sent by Nexmo
+ * 
+ * Usage: $var = new NexoReceipt ();
+ * Methods:
+ *     exists ( )
+ *     
+ *
+ */
 
 class NexmoReceipt {
 
@@ -12,9 +20,9 @@ class NexmoReceipt {
 	public $from = '';
 	public $to = '';
 	public $network = '';
-	public $id = '';
+	public $message_id = '';
 	public $status = '';
-	public $received_time = 0;
+	public $received_time = 0;    // Format: UNIX timestamp
 
 	public $found = false;
 
@@ -32,7 +40,7 @@ class NexmoReceipt {
 		$this->to = $data['msisdn'];
 		$this->from = $data['to'];
 		$this->network = $data['network-code'];
-		$this->id = $data['messageId'];
+		$this->message_id = $data['messageId'];
 		$this->status = strtoupper($data['status']);
 
 		// Format the date into timestamp
@@ -41,6 +49,9 @@ class NexmoReceipt {
 	}
 
 
+	/**
+	 * Returns true if a valid receipt is found
+	 */
 	public function exists () {
 		return $this->found;
 	}
