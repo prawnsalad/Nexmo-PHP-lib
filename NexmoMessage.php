@@ -175,6 +175,7 @@ class NexmoMessage {
 			curl_setopt( $to_nexmo, CURLOPT_POST, true );
 			curl_setopt( $to_nexmo, CURLOPT_RETURNTRANSFER, true );
 			curl_setopt( $to_nexmo, CURLOPT_POSTFIELDS, $post );
+			curl_setopt( $to_nexmo, CURLOPT_SSL_VERIFYPEER, false);
 			$from_nexmo = curl_exec( $to_nexmo );
 			curl_close ( $to_nexmo );
 
