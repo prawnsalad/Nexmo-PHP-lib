@@ -11,7 +11,7 @@ Quick Examples
 
 
 
-2) Recieving SMS
+2) Recieving SMS 
 
      $sms = new NexmoMessage('account_key', 'account_secret');
      if ($sms->inboundText()) {
@@ -35,6 +35,15 @@ Quick Examples
                  break;
          }
      }
+
+
+
+4) List purchased numbers on your account
+
+     $account = new NexmoAccount('account_key', 'account_secret');
+     $numbers = $account->numbersList();
+
+
 
 
 
