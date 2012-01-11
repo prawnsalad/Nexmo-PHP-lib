@@ -51,7 +51,10 @@ class NexmoMessage {
 	public $text = '';
 	public $network = '';
 
-	
+	// A few options
+	public $ssl_verify = false; // Verify Nexmo SSL before sending any message
+
+
 	function NexmoMessage ($nx_key, $nx_password) {
 		$this->nx_key = $nx_key;
 		$this->nx_password = $nx_password;
@@ -175,7 +178,11 @@ class NexmoMessage {
 			curl_setopt( $to_nexmo, CURLOPT_POST, true );
 			curl_setopt( $to_nexmo, CURLOPT_RETURNTRANSFER, true );
 			curl_setopt( $to_nexmo, CURLOPT_POSTFIELDS, $post );
-			curl_setopt( $to_nexmo, CURLOPT_SSL_VERIFYPEER, false);
+
+			if (!$this->ssl_verify) {
+				curl_setopt( $to_nexmo, CURLOPT_SSL_VERIFYPEER, false);
+			}
+
 			$from_nexmo = curl_exec( $to_nexmo );
 			curl_close ( $to_nexmo );
 
