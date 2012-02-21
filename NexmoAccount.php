@@ -36,9 +36,9 @@
 		 * @param $nx_key Your Nexmo account key
 		 * @param $nx_secret Your Nexmo secret
 		 */
-		public function __construct ($nx_key, $nx_secret) {
-			$this->nx_key = $nx_key;
-			$this->nx_secret = $nx_secret;
+		public function __construct ($api_key, $api_secret) {
+			$this->nx_key = $api_key;
+			$this->nx_secret = $api_secret;
 		}
 
 

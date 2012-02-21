@@ -20,7 +20,7 @@ class NexmoMessage {
 
 	// Nexmo account credentials
 	private $nx_key = '';
-	private $nx_password = '';
+	private $nx_secret = '';
 
 	/**
 	 * @var string Nexmo server URI
@@ -55,9 +55,9 @@ class NexmoMessage {
 	public $ssl_verify = false; // Verify Nexmo SSL before sending any message
 
 
-	function NexmoMessage ($nx_key, $nx_password) {
-		$this->nx_key = $nx_key;
-		$this->nx_password = $nx_password;
+	function NexmoMessage ($api_key, $api_secret) {
+		$this->nx_key = $api_key;
+		$this->nx_secret = $api_secret;
 	}
 
 
@@ -165,7 +165,7 @@ class NexmoMessage {
 	 */
 	private function sendRequest ( $data ) {
 		// Build the post data
-		$data = array_merge($data, array('username' => $this->nx_key, 'password' => $this->nx_password));
+		$data = array_merge($data, array('username' => $this->nx_key, 'password' => $this->nx_secret));
 		$post = '';
 		foreach($data as $k => $v){
 			$post .= "&$k=$v";
