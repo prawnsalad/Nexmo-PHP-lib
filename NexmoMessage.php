@@ -203,7 +203,7 @@ class NexmoMessage {
 			// No way of sending a HTTP post :(
 			return false;
 		}
-		
+	var_dump('Raw return', $from_nexmo);
 		$from_nexmo = str_replace('-', '', $from_nexmo);
 		
 		return $this->nexmoParse( $from_nexmo );
@@ -276,41 +276,74 @@ class NexmoMessage {
 	public function displayOverview( $nexmo_response=null ){
 		$info = (!$nexmo_response) ? $this->nexmo_response : $nexmo_response;
 
-		if (!$nexmo_response ) return '<p>Cannot display an overview of this response</p>';
+		if (!$nexmo_response ) return 'Cannot display an overview of this response';
 
-		//How many messages were sent?
+		// How many messages were sent?
 		if ( $info->messagecount > 1 ) {
 		
-			$start = '<p>Your message was sent in ' . $info->messagecount . ' parts ';
+			$status = 'Your message was sent in ' . $info->messagecount . ' parts';
 		
 		} elseif ( $info->messagecount == 1) {
 		
-			$start = '<p>Your message was sent ';
+			$status = 'Your message was sent';
 		
 		} else {
 
-			return '<p>There was an error sending your message</p>';
+			return 'There was an error sending your message';
 		}
 		
-		//Check each message for errors
-		$error = '';
+		// Build an array of each message status and ID
 		if (!is_array($info->messages)) $info->messages = array();
-
+		$message_status = array();
 		foreach ( $info->messages as $message ) {
+			$tmp = array('id'=>'', 'status'=>0);
+
 			if ( $message->status != 0) {
-				$error .= $message->errortext . ' ';
+				$tmp['status'] = $message->errortex;
+			} else {
+				$tmp['status'] = 'OK';
+				$tmp['id'] = $message->messageid;
+			}
+
+			$message_status[] = $tmp;
+		}
+		
+		
+		// Build the output
+		if (isset($_SERVER['HTTP_HOST'])) {
+			// HTML output
+			$ret = '<table><tr><td colspan="2">'.$status.'</td></tr>';
+			$ret .= '<tr><th>Status</th><th>Message ID</th></tr>';
+			foreach ($message_status as $mstat) {
+				$ret .= '<tr><td>'.$mstat['status'].'</td><td>'.$mstat['id'].'</td></tr>';
+			}
+			$ret .= '</table>';
+
+		} else {
+
+			// CLI output
+			$ret = "$status:\n";
+
+			// Get the sizes for the table
+			$out_sizes = array('id'=>strlen('Message ID'), 'status'=>strlen('Status'));
+			foreach ($message_status as $mstat) {
+				if ($out_sizes['id'] < strlen($mstat['id'])) {
+					$out_sizes['id'] = strlen($mstat['id']);
+				}
+				if ($out_sizes['status'] < strlen($mstat['status'])) {
+					$out_sizes['status'] = strlen($mstat['status']);
+				}
+			}
+
+			$ret .= '  '.str_pad('Status', $out_sizes['status'], ' ').'   ';
+			$ret .= str_pad('Message ID', $out_sizes['id'], ' ')."\n";
+			foreach ($message_status as $mstat) {
+				$ret .= '  '.str_pad($mstat['status'], $out_sizes['status'], ' ').'   ';
+				$ret .= str_pad($mstat['id'], $out_sizes['id'], ' ')."\n";
 			}
 		}
-		
-		
-		//Complete parsed response
-		if ( $error == '' ) {
-			$complete = 'and delivered successfully.</p>';
-		} else {
-			$complete = 'but there was an error: ' . $error . '</p>';
-		}
 
-		return $start . $complete;
+		return $ret;
 	}
 
 
