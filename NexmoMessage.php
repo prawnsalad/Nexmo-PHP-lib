@@ -50,6 +50,7 @@ class NexmoMessage {
 	public $from = '';
 	public $text = '';
 	public $network = '';
+	public $message_id = '';
 
 	// A few options
 	public $ssl_verify = false; // Verify Nexmo SSL before sending any message
@@ -373,6 +374,7 @@ class NexmoMessage {
 		$this->from = $data['msisdn'];
 		$this->text = $data['text'];
 		$this->network = $data['network-code'];
+		$this->message_id = $data['messageId'];
 
 		// Flag that we have an inbound message
 		$this->inbound_message = true;
