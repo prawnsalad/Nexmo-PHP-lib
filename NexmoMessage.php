@@ -373,7 +373,7 @@ class NexmoMessage {
 		$this->to = $data['to'];
 		$this->from = $data['msisdn'];
 		$this->text = $data['text'];
-		$this->network = $data['network-code'];
+		$this->network = (isset($data['network-code'])) ? $data['network-code'] : '';
 		$this->message_id = $data['messageId'];
 
 		// Flag that we have an inbound message
