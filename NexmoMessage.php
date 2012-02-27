@@ -203,12 +203,12 @@ class NexmoMessage {
 			// No way of sending a HTTP post :(
 			return false;
 		}
-	var_dump('Raw return', $from_nexmo);
+		
 		$from_nexmo = str_replace('-', '', $from_nexmo);
 		
 		return $this->nexmoParse( $from_nexmo );
 	 
-	 }
+	}
 	
 	
 	/**
