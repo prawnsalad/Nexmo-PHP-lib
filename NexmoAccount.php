@@ -26,7 +26,7 @@
 			'get_own_numbers' => array('method' => 'GET', 'url' => '/account/numbers/{k}/{s}'),
 			'search_numbers' => array('method' => 'GET', 'url' => '/number/search/{k}/{s}/{country_code}?pattern={pattern}'),
 			'buy_number' => array('method' => 'POST', 'url' => '/number/buy/{k}/{s}/{country_code}/{msisdn}'),
-			'cancel_number' => array('method' => 'POST', 'url' => '/number/cancel/{key}/{secret}/{country_code}/{msisdn}')
+			'cancel_number' => array('method' => 'POST', 'url' => '/number/cancel/{k}/{s}/{country_code}/{msisdn}')
 		);
 
 
