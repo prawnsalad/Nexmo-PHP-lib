@@ -300,7 +300,7 @@ class NexmoMessage {
 			$tmp = array('id'=>'', 'status'=>0);
 
 			if ( $message->status != 0) {
-				$tmp['status'] = $message->errortex;
+				$tmp['status'] = $message->errortext;
 			} else {
 				$tmp['status'] = 'OK';
 				$tmp['id'] = $message->messageid;
