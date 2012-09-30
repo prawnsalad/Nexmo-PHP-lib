@@ -273,7 +273,10 @@ class NexmoMessage {
 
 
 
-
+	/**
+	 * Display a brief overview of a sent message.
+	 * Useful for debugging and quick-start purposes.
+	 */
 	public function displayOverview( $nexmo_response=null ){
 		$info = (!$nexmo_response) ? $this->nexmo_response : $nexmo_response;
 
