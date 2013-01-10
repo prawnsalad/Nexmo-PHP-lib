@@ -204,8 +204,7 @@ class NexmoMessage {
 			// No way of sending a HTTP post :(
 			return false;
 		}
-		
-		$from_nexmo = str_replace('-', '', $from_nexmo);
+
 		
 		return $this->nexmoParse( $from_nexmo );
 	 
@@ -213,12 +212,46 @@ class NexmoMessage {
 	
 	
 	/**
+	 * Recursively normalise any key names in an object, removing unwanted characters
+	 */
+	private function normaliseKeys ($obj) {
+		// Determine is working with a class or araay
+		if ($obj instanceof stdClass) {
+			$new_obj = new stdClass();
+			$is_obj = true;
+		} else {
+			$new_obj = array();
+			$is_obj = false;
+		}
+
+
+		foreach($obj as $key => $val){
+			// If we come across another class/array, normalise it
+			if ($val instanceof stdClass || is_array($val)) {
+				$val = $this->normaliseKeys($val);
+			}
+			
+			// Replace any unwanted characters in they key name
+			if ($is_obj) {
+				$new_obj->{str_replace('-', '', $key)} = $val;
+			} else {
+				$new_obj[str_replace('-', '', $key)] = $val;
+			}
+		}
+
+		return $new_obj;
+	}
+
+
+	/**
 	 * Parse server response.
 	 */
 	private function nexmoParse ( $from_nexmo ) {
-		
-		$response_obj = json_decode( $from_nexmo );
-		
+		$response = json_decode($from_nexmo);
+
+		// Copy the response data into an object, removing any '-' characters from the key
+		$response_obj = $this->normaliseKeys($response);
+
 		if ($response_obj) {
 			$this->nexmo_response = $response_obj;
 
