@@ -259,7 +259,9 @@ class NexmoMessage {
 			$response_obj->cost = $total_cost = 0;
 			if (is_array($response_obj->messages)) {
 				foreach ($response_obj->messages as $msg) {
-					$total_cost = $total_cost + (float)$msg->messageprice;
+					if (property_exists($msg, "messageprice")) {
+						$total_cost = $total_cost + (float)$msg->messageprice;
+					}
 				}
 
 				$response_obj->cost = $total_cost;
